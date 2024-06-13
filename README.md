@@ -18,7 +18,7 @@ Go 모듈은 패키지 관리와 의존성 관리를 위한 Go의 최신 시스�
 3.  의존성 관리:
     - go get <package> 명령어를 사용하여 패키지를 추가하거나 업데이트합니다.
     - go mod tidy 명령어는 사용되지 않는 패키지를 제거하고 필요한 패키지를 추가합니다.
-    - go mod vendor 명령어는 의존성을 vendor 디렉토리에 복사하여 버전 관리를 강화합니다.
+    - go install: 빌드된 파일을 환경 변수에 맞춰 지정된 위치($GOBIN)에 배치합니다.
 
 npm의 package.json과 같은 역할
 
@@ -27,3 +27,78 @@ npm의 package.json과 같은 역할
 1. run : 빌드 & 실행
 2. build : 빌드
 3. install : 환경 변수에 맞춰 빌드된 파일을 해당 위치에 떨굼 => GOBIN
+
+# 변수 값 타입
+
+## 변수 선언
+
+### short declaration operator
+
+```go
+x := 23
+```
+
+### var
+
+var는 전역 스코프에서 변수를 사용하기 위한 예약어입니다.
+
+```go
+var x = 11
+var z int
+```
+
+### const
+
+상수는 const로 선언합니다.
+
+```go
+const Pi = 3.14
+const Greeting = "Hello World"
+```
+
+## 타입
+
+정적 타입을 가졌기 때문에 선언시에 타입을 지정합니다.
+
+```go
+var s string = "GO GO";
+var z double
+```
+
+### 사용자 정의 타입 만들기
+
+type 을 사용해 전용 타입을 만들 수 있음
+
+```go
+var a int
+
+type hotdog int
+
+var b hotdog
+
+func main() {
+
+	 a = 32
+	 b = 31
+
+	 fmt.Println(a)
+	 // int
+	 fmt.Printf("%T\n",a)
+
+	 fmt.Println(b)
+	 // main.hotdog
+	 fmt.Printf("%T\n",b)
+
+    // !오류
+    // int에 hodog 타입을 대입할 수 없음
+     a = b
+}
+```
+
+### 타입 캐스팅
+
+위의 코드에서 캐스팅을 사용하면 a=b 에서 발생한 오류를 없앨 수 있습니다.
+
+```go
+a = int(b)
+```
