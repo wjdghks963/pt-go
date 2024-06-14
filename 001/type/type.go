@@ -20,4 +20,6 @@ func main() {
 	 fmt.Println(b)
 	 // main.hotdog
 	 fmt.Printf("%T\n",b)
+
+	  printString() 
 }
