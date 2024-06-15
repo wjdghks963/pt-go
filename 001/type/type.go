@@ -21,5 +21,9 @@ func main() {
 	 // main.hotdog
 	 fmt.Printf("%T\n",b)
 
-	  printString() 
+	printString() 
+	printBoolean()
+	printConstans()	  
+	printIota()
+	printBitShifter()
 }
