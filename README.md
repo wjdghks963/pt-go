@@ -115,3 +115,98 @@ ex) bool = true, string = "", int = 0 ...
 
 상수 선언에 사용되는 특별한 식별자로, 상수 값을 자동으로 증가시키는 데 사용
 iota는 const 선언 블록 내에서 첫 번째 상수부터 0부터 시작하여 각각의 상수마다 1씩 증가합니다. 이를 통해 반복적인 상수 값을 쉽게 정의할 수 있습니다.
+
+<br>
+
+# 루프 / 조건문
+
+## 반복문 루프
+
+go는 while do 와 같은 반복문 대신 for 를 사용합니다.
+
+for 루프는 초기화, 조건, 후처리 부분을 모두 생략할 수 있습니다.
+
+1. 일반 for loop
+
+```go
+	for i:=0; i<=10; i++ {
+		for j:=0; j<=10; j++ {
+			fmt.Printf("OUT :: %d\t INNER :: %d\n" , i, j)
+		}
+	}
+```
+
+2. while 스타일 (짧은 구문)
+
+```go
+    x := 1
+    for x <10 {
+        fmt.Println(x)
+    }
+```
+
+```go
+	y := 1
+	for {
+		if x > 9 {
+			break
+		}
+		fmt.Println(y)
+		y++
+	}
+```
+
+3. range
+
+슬라이스, 배열, 맵, 채널 등을 순회할 때 유용하게 사용됩니다.
+
+```go
+nums := []int{2, 3, 4}
+for i, num := range nums {
+    fmt.Println("index:", i, "value:", num)
+}
+```
+
+## 조건문
+
+```go
+
+if true {
+    fmt.Print("TRUE !!")
+}
+```
+
+### 초기화 조건문
+
+조건문 안에서 변수를 초기화하면 스코프를 제한 시킬 수 있습니다.
+
+```go
+if x:32; x == 2{
+    fmt.Println("x is 2")
+}
+```
+
+### switch
+
+스위치는 흐름제어를 위해 사용합니다
+
+`fallthrough` 를 사용한다면 성공 case에 걸리지 않고 하위 case를 실행합니다.
+
+```go
+// 조건값의 기본값은 true 이기 떄문에 case가 true 인것을 검색
+switch  {
+    case false:
+            fmt.Println("false")
+    case 2==4:
+            fmt.Println("false")
+
+    case 2==2:
+            fmt.Println("true1")
+            fallthrough
+    case 3==3:
+            fmt.Println("true2")
+
+    default:
+            fmt.Println("default")
+}
+```
