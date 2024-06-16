@@ -435,3 +435,128 @@ func (de divideError) Error() string {
 	)
 }
 ```
+
+# Slice
+
+슬라이스(Slice)는 동적 배열과 유사한 구조로, 크기가 **가변적**입니다. 슬라이스는 배열보다 더 유연하고 사용하기 쉽습니다.
+
+따라서 직접적으로 array에 접근하는 일은 거의 없을 것입니다.
+
+## slice 생성 방법
+
+```go
+	// 배열로부터 슬라이스 생성
+	arr := [5]int{1, 2, 3, 4, 5}
+	slice1 := arr[1:4] // 슬라이스: [2 3 4]
+
+	// make 함수를 사용하여 슬라이스 생성
+	slice2 := make([]int, 3) // 길이가 3인 슬라이스: [0 0 0]
+
+	// 리터럴을 사용하여 슬라이스 생성
+	slice3 := []int{6, 7, 8} // 슬라이스: [6 7 8]
+
+	fmt.Println(slice1)
+	fmt.Println(slice2)
+	fmt.Println(slice3)
+```
+
+## 슬라이스의 속성
+
+슬라이스는 세 가지 속성을 가집니다:
+
+- 길이(Length): 슬라이스에 포함된 요소의 개수
+- 용량(Capacity): 슬라이스의 기저 배열에서 시작 위치부터 끝까지의 요소 개수
+- 기저 배열(Underlying array): 슬라이스가 참조하는 배열
+
+```go
+	slice := []int{1, 2, 3, 4, 5}
+	fmt.Println("Length:", len(slice))   // 출력: Length: 5
+	fmt.Println("Capacity:", cap(slice)) // 출력: Capacity: 5
+```
+
+## 함수 스프레드 연산자
+
+```go
+func printSlice(sl ...string){
+	for i < len(sl){
+		fmt.Prirntln(sl[i])
+	}
+}
+
+// 가변 인자 함수 호출
+printSlice("apple", "banana", "cherry")
+
+// 슬라이스를 가변 인자로 전달할 때는 스프레드 연산자(...) 사용
+fruits := []string{"apple", "banana", "cherry"}
+printSlice(fruits...)
+```
+
+## append
+
+1.  용량 내에서 확장:
+
+    슬라이스의 용량이 충분하다면, append는 원본 슬라이스의 기저 배열을 수정합니다. 이 경우 원본 슬라이스와 새로운 슬라이스는 동일한 배열을 참조합니다.
+
+2.  용량 초과:
+
+    슬라이스의 용량이 부족하면, append는 새로운 배열을 할당하고, 기존 요소를 복사한 후 새로운 요소를 추가합니다. 이 경우 원본 슬라이스와 새로운 슬라이스는 다른 배열을 참조합니다.
+
+```go
+a := make([]int, 3)
+fmt.Println("len of a:", len(a))
+// len of a: 3
+fmt.Println("cap of a:", cap(a))
+// cap of a: 3
+fmt.Println("appending 4 to b from a")
+// appending 4 to b from a
+b := append(a, 4)
+fmt.Println("b:", b)
+// b: [0 0 0 4]
+fmt.Println("addr of b:", &b[0])
+// addr of b: 0x44a0c0
+fmt.Println("appending 5 to c from a")
+// appending 5 to c from a
+c := append(a, 5)
+fmt.Println("addr of c:", &c[0])
+// addr of c: 0x44a180
+fmt.Println("a:", a)
+// a: [0 0 0]
+fmt.Println("b:", b)
+// b: [0 0 0 4]
+fmt.Println("c:", c)
+// c: [0 0 0 5]
+```
+
+**! 주의점**
+
+append 함수를 사용할 때 반환된 슬라이스를 원래 슬라이스에 다시 할당하지 않으면, 다음과 같은 문제가 발생할 수 있습니다:
+
+1. 원래 슬라이스가 변경되지 않음: append 함수가 반환하는 새로운 슬라이스를 사용하지 않으면, 원래 슬라이스는 변경되지 않습니다. -> 유연하지 않음
+2. 혼란과 버그 발생 가능성: 코드를 유지보수하거나 읽을 때 혼란이 생기고, 버그가 발생할 가능성이 높아집니다.
+
+따라서 append를 사용할 땐 새로운 변수에 할당하면 안되고 원본 슬라이스에 재할당해야합니다.
+
+GOOD
+
+```go
+slice := []int{1, 2, 3}
+	fmt.Println("Before append:", slice) // 출력: Before append: [1 2 3]
+
+	// append 함수의 결과를 원래 슬라이스에 다시 할당
+	slice = append(slice, 4)
+	fmt.Println("After append:", slice)  // 출력: After append: [1 2 3 4]
+```
+
+BAD
+
+```go
+	slice := []int{1, 2, 3}
+	fmt.Println("Before append:", slice) // 출력: Before append: [1 2 3]
+
+	// append 함수의 결과를 다른 변수에 할당
+	newSlice := append(slice, 4)
+	fmt.Println("Original slice after append:", slice) // 출력: Original slice after append: [1 2 3]
+	fmt.Println("New slice after append:", newSlice)   // 출력: New slice after append: [1 2 3 4]
+```
+
+## range
