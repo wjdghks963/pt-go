@@ -211,7 +211,7 @@ switch  {
 }
 ```
 
-# 자료 구조
+# 구조체
 
 ## struct
 
@@ -267,3 +267,171 @@ myTruck := truck{
 
 Go에서의 포함(embedding)은 명시적으로 재사용성을 높이는 방법이며, 명시적이지 않은 상속과 달리 더 직관적입니다.
 포함된 구조체의 메서드나 필드를 오버라이딩하는 기능은 없지만, 포함된 구조체를 통해 비슷한 기능을 제공할 수 있습니다.
+
+<br>
+
+## interface
+
+인터페이스를 명시적으로 선언하지 않고, 구조체가 인터페이스에 정의된 메서드를 모두 구현하면 해당 인터페이스를 자동으로 구현한 것으로 간주됩니다. 이를 “구조적 타이핑”이라고 합니다.
+
+1. 구조적 타이핑: Go에서는 타입 선언 없이도 인터페이스를 구현할 수 있습니다. 인터페이스에 정의된 모든 메서드를 구현하면 해당 타입은 자동으로 그 인터페이스를 구현합니다.
+
+2. 명시적 구현 선언이 필요 없음: 다른 언어와 달리, Go에서는 인터페이스를 구현한다고 명시적으로 선언할 필요가 없습니다. 필요한 메서드만 구현하면 됩니다.
+
+3. 다양한 활용: 이 방법을 통해 코드의 유연성을 높이고, 다양한 타입을 처리할 수 있는 함수와 메서드를 작성할 수 있습니다.
+
+```go
+type Msg interface {
+	getMsg() string
+}
+
+type Phone struct {
+	model string
+	category string
+}
+
+func (p Phone ) getMsg() string {
+	return fmt.Sprintf("MODEL : %v, CATEGORY : %v", d.model, d.category)
+}
+
+
+type Watch struct {
+	model string
+	category string
+}
+
+func (w Watch ) getMsg() string {
+	return fmt.Sprintf("MODEL : %v, CATEGORY : %v", d.model, d.category)
+}
+
+func sendMsg(m Msg) {
+	fmt.Println(msg.getMsg())
+}
+
+func main(){
+	phone := Phone{
+		model:"IPhone",
+		category:"phone"
+	}
+
+	watch := Watch{
+		model:"apple watch",
+		category:"watch"
+	}
+
+
+	sendMsg(phone)
+	sendMsg(watch)
+}
+```
+
+### 타입 어설션
+
+타입 어설션을 사용하면 인터페이스 변수가 실제로 어떤 구체적인 타입을 갖는지 확인할 수 있습니다.
+
+```go
+type email struct {
+	address string
+}
+
+type sms struct {
+	number string
+}
+
+type message interface {
+	getMessage() string
+}
+
+func (e email) getMessage() string {
+	return "Email: " + e.address
+}
+
+func (s sms) getMessage() string {
+	return "SMS: " + s.number
+}
+
+func main() {
+	var msg message
+
+	msg = email{address: "example@example.com"}
+
+	// 타입 어설션
+	if em, ok := msg.(email); ok {
+		fmt.Println("Email address is:", em.address)
+	} else {
+		fmt.Println("Not an email")
+	}
+
+	msg = sms{number: "123-456-7890"}
+
+	// 타입 어설션
+	if sm, ok := msg.(sms); ok {
+		fmt.Println("SMS number is:", sm.number)
+	} else {
+		fmt.Println("Not an SMS")
+	}
+}
+```
+
+# 에러
+
+Go에서 에러는 error 인터페이스로 표현됩니다. error 인터페이스는 Error 메서드를 가지며, 이는 에러 메시지를 반환합니다.
+
+```go
+type error interface {
+    Error() string
+}
+```
+
+```go
+
+user, err := getUser()
+if err != nil {
+	fmt.Println(err)
+	return
+}
+
+profile, err  := getUserProfile(user.ID)
+if err != nil {
+	fmt.Println(err)
+	return
+}
+
+```
+
+## 커스텀 에러
+
+에러는 errors 패키지의 New 함수나 fmt.Errorf 함수를 사용하여 생성할 수 있습니다.
+
+1. New 함수 사용
+
+```go
+import (
+    "errors"
+    "fmt"
+)
+
+// errors.New를 사용하여 에러 생성
+err := errors.New("an error occurred")
+
+// fmt.Errorf를 사용하여 에러 생성
+err = fmt.Errorf("an error occurred: %v", someValue)
+```
+
+2. error 인터페이스를 구현하는 사용자 정의 타입을 사용
+
+```go
+// 사용자 정의 에러 타입 정의
+type divideError struct {
+	dividend float64
+	divisor  float64
+}
+
+// error 인터페이스 구현
+func (de divideError) Error() string {
+	return fmt.Sprintf(
+		"cannot divide %v by %v",
+		de.dividend, de.divisor,
+	)
+}
+```
