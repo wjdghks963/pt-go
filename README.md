@@ -560,3 +560,118 @@ BAD
 ```
 
 ## range
+
+range는 슬라이스, 배열, 맵, 문자열 등의 요소를 반복(iterate)하는 데 사용됩니다.
+
+두 개의 값을 반환합니다: 인덱스와 해당 인덱스의 요소.
+
+```go
+	// slice에 대한 range
+	numbers := []int{1, 2, 3, 4, 5}
+
+	for i, num := range numbers {
+		fmt.Printf("Index: %d, Value: %d\n", i, num)
+	}
+
+
+	// map에 대한 range
+	dict := map[string]int{"one": 1, "two": 2, "three": 3}
+
+	for key, value := range dict {
+		fmt.Printf("Key: %s, Value: %d\n", key, value)
+	}
+
+
+	// 문자열에 대한 range
+	str := "hello"
+
+	for i, ch := range str {
+		fmt.Printf("Index: %d, Character: %c\n", i, ch)
+	}
+```
+
+<br>
+
+# Map
+
+### 맵 생성
+
+Js의 object와 python의 dict 과 같은 기능입니다.
+
+빈값이면 nil을 반환합니다.
+
+```go
+ages := make(map[string]int)
+ages["J"] = 32
+ages["C"] = 22
+
+
+ages := map[string]int{
+	"J":32,
+	"C":22
+}
+
+```
+
+### 맵 요소 추가 및 삭제
+
+```go
+	ages := map[string]int{
+		"J": 32,
+		"C": 22,
+	}
+
+	// 요소 추가
+	ages["A"] = 27
+
+	// 요소 삭제
+	delete(ages, "C")
+```
+
+### 맵 요소 접근
+
+요소 접근은 키 값으로 할 수 있으며 만약 값의 존재 유무에 대한 처리를 결정 할 수 있습니다.
+
+1. 존재 여부 확인 후 조건문
+2. 맵의 값에 대한 자료형으로 기본값 받기
+
+```go
+	ages := map[string]int{
+		"J": 32,
+		"C": 22,
+	}
+
+		// 존재 여부 확인
+	ageX, exists := ages["X"]
+	if exists {
+		fmt.Println("Age of X:", ageX)
+	} else {
+		fmt.Println("X does not exist in the map") // 출력: X does not exist in the map
+	}
+
+	// 키가 존재하지 않을 때 기본 값 반환
+	ageY := ages["Y"]
+	fmt.Println("Age of Y:", ageY) // 출력: Age of Y: 0 (int의 제로 값)
+
+```
+
+### 주의점
+
+Go의 맵(map)에서 **키는 반드시 비교 가능한 타입**이어야 하며, 일반 자료형을 사용해야 하는 이유는 Go 언어의 타입 시스템과 비교 연산의 특성 때문입니다.
+
+- 숫자 타입(int, float 등)
+- 문자열(string)
+- 불리언(bool)
+- 포인터(pointer)
+- 인터페이스(interface)
+- 구조체(struct) (모든 필드가 비교 가능한 경우)
+- 배열(array) (모든 요소가 비교 가능한 경우)
+
+일반 자료형을 사용하는 이유
+
+1. 비교 가능성:
+   - 맵의 키는 내부적으로 해시 테이블을 사용하여 저장됩니다. 해시 테이블은 키의 해시 값을 계산하고, 해시 값이 같은 키들에 대해 == 연산자를 사용하여 비교합니다.
+   - 일반 자료형(숫자, 문자열 등)은 비교 연산이 정의되어 있어, 해시 테이블의 키로 사용하기에 적합합니다.
+2. 일관성과 안정성:
+   - 비교 가능한 타입은 일관된 동작을 보장하며, 키 비교 시 예상치 못한 결과를 피할 수 있습니다.
+   - 예를 들어, 구조체 타입을 키로 사용할 때 구조체의 모든 필드가 비교 가능해야 하며, 구조체의 비교 연산이 정의되어 있어야 합니다.
