@@ -675,3 +675,122 @@ Go의 맵(map)에서 **키는 반드시 비교 가능한 타입**이어야 하�
 2. 일관성과 안정성:
    - 비교 가능한 타입은 일관된 동작을 보장하며, 키 비교 시 예상치 못한 결과를 피할 수 있습니다.
    - 예를 들어, 구조체 타입을 키로 사용할 때 구조체의 모든 필드가 비교 가능해야 하며, 구조체의 비교 연산이 정의되어 있어야 합니다.
+
+# Advanced Functions (일급 함수 & 고차 함수)
+
+## 일급 함수 (First-Class Functions)
+
+일급 함수는 다음과 같은 특징을 가집니다:
+
+1. 함수는 변수에 할당될 수 있습니다.
+2. 함수는 다른 함수의 인자로 전달될 수 있습니다.
+3. 함수는 다른 함수의 반환 값이 될 수 있습니다.
+
+## 고차 함수 (Higher-Order Functions)
+
+고차 함수는 힘수를 인자로 받아 유연한 코드 작성을 할 수 있도록 도와줍니다.
+결과가 상황에 따라 바뀌고 그것을 처리하는 곳에 유용합니다. ex) httpHandler 과 같은 handler 류
+
+1. 함수를 인자로 받을 수 있습니다.
+2. 함수를 반환할 수 있습니다.
+
+## 커링
+
+커링은 여러 개의 인자를 받는 함수를 일련의 함수로 변환하여 각 함수가 하나의 인자만 받도록 하는 기법입니다. Go는 순수 함수형 언어가 아니므로 커링을 직접적으로 지원하지는 않지만, 클로저와 고차 함수를 사용하여 비슷한 효과를 얻을 수 있습니다.
+
+```go
+// 두 개의 인자를 받아 더하는 함수
+func add(a, b int) int {
+	return a + b
+}
+
+// 하나의 인자를 받아 부분적으로 적용된 함수 생성
+func curriedAdd(a int) func(int) int {
+	return func(b int) int {
+		return add(a, b)
+	}
+}
+
+func main() {
+	// 5를 인자로 받아 새로운 함수를 생성
+	addFive := curriedAdd(5)
+
+	// 새로운 함수는 하나의 인자만 받음
+	result := addFive(3) // 5 + 3
+	fmt.Println("Result:", result) // 출력: Result: 8
+}
+```
+
+## Defer
+
+Go의 defer 키워드는 매우 유용한 기능으로, 특정 함수 호출을 현재 함수가 반환되기 직전에 자동으로 실행되도록 예약합니다. defer 키워드는 주로 리소스를 정리하거나, 파일 핸들러나 데이터베이스 연결을 닫는 등의 작업에 사용됩니다.
+
+**defer 키워드의 특징**
+
+1. 지연 실행: defer 키워드를 사용한 함수 호출은 그 함수의 실행이 끝날 때까지 지연됩니다.
+2. 인수 평가: defer를 사용할 때 함수의 인수는 즉시 평가되지만, 함수 자체는 지연 실행됩니다.
+3. 여러 개의 defer: 여러 개의 defer 호출이 있을 경우, 후입선출(LIFO) 순서로 실행됩니다.
+
+```go
+
+func main() {
+	// 파일 열기
+	file, err := os.Open("example.txt")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+
+	// main 함수가 반환되기 직전에 파일 닫기
+	defer file.Close()
+
+	// 파일 작업 수행
+	// ...
+}
+```
+
+## 익명 함수
+
+익명 함수(Anonymous Functions)는 이름이 없는 함수로, 한 번만 사용하거나 빠르게 클로저(Closure)를 생성할 때 유용합니다. Go 언어에서는 익명 함수를 정의하고 즉시 실행하거나 변수에 할당할 수 있습니다. 익명 함수는 특히 고차 함수나 콜백 함수로 사용될 때 유용합니다.
+
+1. 즉발
+
+```go
+func main() {
+    // 익명 함수 정의와 동시에 실행
+    func(message string) {
+        fmt.Println(message)
+    }("Hello, World!")
+}
+```
+
+2. 변수에 할당
+
+```go
+    // 익명 함수를 변수에 할당
+    greet := func(name string) string {
+        return fmt.Sprintf("Hello, %s!", name)
+    }
+
+    // 할당된 익명 함수 호출
+    message := greet("Alice")
+    fmt.Println(message) // 출력: Hello, Alice!
+```
+
+3. 클로저(Closure) 생성
+
+```go
+  // 클로저 생성
+    counter := func() func() int {
+        count := 0
+        return func() int {
+            count++
+            return count
+        }
+    }()
+
+    // 클로저 호출
+    fmt.Println(counter()) // 출력: 1
+    fmt.Println(counter()) // 출력: 2
+    fmt.Println(counter()) // 출력: 3
+```

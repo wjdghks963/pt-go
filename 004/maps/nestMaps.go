@@ -19,7 +19,7 @@ func getNameCounts(names []string) map[rune]map[string]int {
 		}
 		counts[firstChar][name]++
 	}
-
+	return counts
 }
 
 
