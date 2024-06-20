@@ -794,3 +794,102 @@ func main() {
     fmt.Println(counter()) // 출력: 2
     fmt.Println(counter()) // 출력: 3
 ```
+
+# _ Pointer _
+
+포인터는 다른 변수의 메모리 주소를 저장하는 변수입니다. 포인터는 데이터 자체가 아닌 데이터가 저장된 위치를 가리킵니다.
+
+## 포인터 선언 및 사용
+
+1. 포인터 선언:
+   포인터를 선언할 때는 \* 문법을 사용합니다.
+
+```go
+var p *int
+```
+
+2. 포인터 할당:
+   포인터를 할당할 때는 & 연산자를 사용하여 변수의 주소를 가져옵니다.
+
+```go
+myString := "hello"
+myStringPtr := &myString //  myString 변수의 메모리 주소
+```
+
+3. 포인터 역참조:
+   포인터가 가리키는 값을 가져오려면 \* 연산자를 사용하여 역참조(dereference)합니다.
+
+```go
+fmt.Println(*myStringPtr) // 출력: hello
+```
+
+4. 포인터 값 변경
+
+```go
+myString := "hello"
+
+// 포인터 선언 및 주소 할당
+myStringPointer = &myString
+
+// 포인터를 통해 값 변경
+*myStringPorinter = "helloPointer" // myString은 "helloPointer"가 된다.
+```
+
+## 리시버(receiver)의 종류
+
+이 메서드가 어떤 타입에 속해 있는지를 나타냅니다. 리시버는 함수가 특정 타입의 메서드임을 명시합니다.
+
+### 값 리시버(Value Receiver)
+
+값 리시버는 타입의 값을 복사하여 메서드에 전달합니다.
+리시버 타입을 포인터로 지정하지 않으면 값 리시버가 됩니다.
+값 리시버를 사용하는 메서드는 원본 값을 변경하지 않습니다.
+
+```go
+type Rectangle struct {
+	width, height int
+}
+
+// 값 리시버 메서드
+func (r Rectangle) Area() int {
+	return r.width * r.height
+}
+
+func main() {
+	rect := Rectangle{width: 10, height: 5}
+	fmt.Println("Area:", rect.Area()) // 출력: Area: 50
+}
+```
+
+### 포인터 리시버(Pointer Receiver)
+
+포인터 리시버는 타입의 포인터를 메서드에 전달합니다.
+리시버 타입을 \*Type으로 지정하면 포인터 리시버가 됩니다.
+포인터 리시버를 사용하는 메서드는 원본 값을 변경할 수 있습니다.
+
+```go
+type Rectangle struct {
+	width, height int
+}
+
+// 포인터 리시버 메서드
+func (r *Rectangle) Scale(factor int) {
+	r.width *= factor
+	r.height *= factor
+}
+
+func main() {
+	rect := Rectangle{width: 10, height: 5}
+	fmt.Println("Before scaling:", rect) // 출력: Before scaling: {10 5}
+	rect.Scale(2)
+	fmt.Println("After scaling:", rect)  // 출력: After scaling: {20 10}
+}
+```
+
+## 포인터의 유용성
+
+1. 효율성:
+   포인터를 사용하면 **데이터를 복사하지 않고도 직접 메모리에서 데이터를 조작**할 수 있으므로 프로그램의 성능을 향상시킬 수 있습니다.
+
+2. 공유된 데이터:
+   여러 함수가 **동일한 데이터를 직접 수정**할 수 있습니다. 이를 통해 함수 간에 데이터를 효율적으로 전달하고 수정할 수 있습니다.
