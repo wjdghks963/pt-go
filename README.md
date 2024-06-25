@@ -25,8 +25,90 @@ npm의 package.json과 같은 역할
 ## 명령어
 
 1. run : 빌드 & 실행
-2. build : 빌드
+2. build : 빌드 -> 패키지 이름 바이너리 파일을 return -> 이 빌드 파일은 어떤 os에서든 사용 가능함
 3. install : 환경 변수에 맞춰 빌드된 파일을 해당 위치에 떨굼 => GOBIN
+
+만약 go의 환경변수를 찾지 못해 install 한 바이너리를 사용하지 못한다면
+
+```go
+echo 'export GOPATH=$HOME/go' >> ~/.zshrc # 또는 ~/.bashrc, ~/.profile
+echo 'export PATH=$PATH:$GOPATH/bin' >> ~/.zshrc # 또는 ~/.bashrc, ~/.profile
+source ~/.zshrc # 또는 ~/.bashrc, ~/.profile
+```
+
+전역으로 설치된 바이너리를 삭제하고 싶다면
+
+```go
+// bin의 파일이 있는 장소
+ls $HOME/go/bin
+```
+
+## import
+
+함수를 import하기 위해선 해당하는 함수 명은 대문자로 시작해야합니다.
+
+export 하는 코드
+
+```go
+package astruct
+
+import "fmt"
+
+// 공개된 함수 (다른 패키지에서 접근 가능)
+func MakeMetStruct() {
+	type Rect struct {
+		Width  int
+		Height int
+	}
+
+	// Rect 구조체의 메서드 정의
+	func (r Rect) Area() int {
+		return r.Width * r.Height
+	}
+
+	// Rect 구조체의 인스턴스 생성
+	r := Rect{
+		Width:  5,
+		Height: 10,
+	}
+
+	// Rect 구조체와 면적 출력
+	fmt.Printf("Rect: %+v\n", r)
+	fmt.Printf("Area: %d\n", r.Area())
+}
+
+// 비공개 함수 (같은 패키지 내에서만 접근 가능)
+func privateFunction() {
+	fmt.Println("This is a private function")
+}
+```
+
+사용하는 코드
+
+```go
+// main.go
+package main
+
+import (
+	"myproject/astruct" // asutrct 패키지 가져오기
+)
+
+func main() {
+	astruct.MakeMetStruct() // 공개된 함수 호출
+	// astruct.privateFunction() // 오류: 비공개 함수는 호출할 수 없음
+}
+
+// go.mod
+module github.com/myproject/astruct
+
+go 1.22.4
+
+require (
+    github.com/junghwan/myproject/astructs v0.0.0
+)
+
+replace github.com/junghwan/myproject/astruct v0.0.0 => ./astruct
+```
 
 # 변수 값 타입
 
