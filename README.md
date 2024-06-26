@@ -975,3 +975,105 @@ func main() {
 
 2. 공유된 데이터:
    여러 함수가 **동일한 데이터를 직접 수정**할 수 있습니다. 이를 통해 함수 간에 데이터를 효율적으로 전달하고 수정할 수 있습니다.
+
+</br>
+
+# Concurrency & Parallelism
+
+## Concurrency(동시성)
+
+동시성은 여러 작업을 동시에 처리할 수 있는 능력입니다. 동시성은 단일 프로세서에서 이루어질 수도 있고, 여러 프로세서에서 이루어질 수도 있습니다. 동시성의 목표는 시스템이 여러 작업을 ‘동시에’ 처리하는 것처럼 보이게 하는 것입니다. 이는 멀티태스킹, 즉 작업을 빠르게 전환함으로써 이루어집니다.
+
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func say(s string) {
+    for i := 0; i < 5; i++ {
+        time.Sleep(100 * time.Millisecond)
+        fmt.Println(s)
+    }
+}
+
+func main() {
+    go say("world")
+    say("hello")
+}
+```
+
+## Parallelism(병렬성)
+
+병렬성은 실제로 여러 작업이 동시에 실행되는 것입니다. 이는 다중 코어 프로세서에서 여러 작업을 병렬로 실행하여 성능을 향상시킵니다. 병렬성은 동시성을 달성하기 위한 방법 중 하나입니다.
+
+```go
+package main
+
+import (
+    "fmt"
+    "runtime"
+    "sync"
+)
+
+func say(s string, wg *sync.WaitGroup) {
+    defer wg.Done()
+    for i := 0; i < 5; i++ {
+        fmt.Println(s)
+    }
+}
+
+func main() {
+    runtime.GOMAXPROCS(2) // 사용할 코어 수를 2로 설정
+    var wg sync.WaitGroup
+
+    wg.Add(2)
+    go say("world", &wg)
+    go say("hello", &wg)
+
+    wg.Wait()
+}
+```
+
+## Channel
+
+채널은 고루틴 간에 데이터를 주고받는 통로입니다. 채널을 사용하면 여러 고루틴이 안전하게 데이터를 주고받을 수 있습니다.
+채널은 다음과 같은 방식으로 작동합니다
+
+1. 채널 생성: make 함수로 채널을 생성합니다.
+
+```go
+c := make(chan int)
+```
+
+2. 데이터 전송: 채널을 통해 데이터를 전송(<- 연산자 사용)합니다.
+
+```go
+c <- value
+```
+
+3. 데이터 수신: 채널을 통해 데이터를 수신(<- 연산자 사용)합니다.
+
+```go
+value := <-c
+```
+
+### **데드락**
+
+Go에서는 채널을 잘못 사용하거나, 고루틴이 서로를 기다리는 상황을 잘못 설정하면 데드락이 발생할 수 있습니다.
+
+```go
+package main
+
+func main() {
+    c := make(chan int)
+    c <- 1 // 여기서 고루틴이 멈춥니다.
+    <-c
+}
+```
+
+메인 고루틴이 채널에 데이터를 보내지만, 동일한 고루틴에서 데이터를 받으려 하기 때문에 채널의 **수신자가 없어 무한히 대기**하게 됩니다.
+
+데드락을 피하기 위해선 시용 후 채널을 닫거나 확실히 발송을 시작한다면 리시버가 있어야합니다.
